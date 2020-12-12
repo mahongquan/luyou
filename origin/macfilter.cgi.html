@@ -1,0 +1,338 @@
+<html>
+    <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta HTTP-EQUIV='Pragma' CONTENT='no-cache'/>
+    <link rel="stylesheet" href='../css/main.css' type='text/css'/>
+    <script src="/js_cm/jquery-1.6.1.min.js"></script>
+    <script src="/js_cm/global.js"></script>
+    <script language=javascript>
+    $(document).ajaxSend(function( event, request, settings ) 
+        {
+            if (settings.type == "POST") 
+            {                                   
+                if (settings.data === undefined || settings.data === "") 
+                {
+                    settings.data = 'csrf_token=lbGqYtyjLMFuouxp';
+                    request.setRequestHeader( "Content-Type", "application/x-www-form-urlencoded; charset=UTF-8" );
+                }
+                else
+                {
+                    if ((settings.contentType || "").indexOf("application/x-www-form-urlencoded") < 0)
+                    {
+                        alert("Error Content-Type:" + settings.contentType);
+                        request.abort();                        
+                    }
+
+                    if (settings.data.indexOf("csrf_token") < 0)
+                    {
+                        settings.data += '&csrf_token=lbGqYtyjLMFuouxp'
+                    }                    
+                }                                    
+            }             
+        });
+    </script>
+    <script language=javascript>
+    $(document).ready(function () {
+        $("form").prepend('<input type="hidden" name="csrf_token" value="lbGqYtyjLMFuouxp" />');
+    });
+    </script>
+</head>
+
+    <script> 
+    var mac_filter_config= { Enable:1,
+ExcludeMode:'BLOCKED',
+macListObj:[
+] };
+    var mode={"FORWARD":'白名单', "BLOCKED":'黑名单'};
+    var local_mac="";
+    $(function(){
+        with(mac_filter_config){
+            $("input[name='mac_filter_enable']")
+            .change(function(){
+                if(!this.checked){
+                    $(".mac").hide();
+                    $("#ModeSave_button").prop("disabled",false);
+                } else { 
+                    $(".mac").show();
+                }
+                $("select[name='mac_exclude_mod']").prop("disabled", !this.checked);
+            })
+            .prop("checked",Boolean(Enable));
+
+            if(!Boolean(Enable)){ 
+                $(".mac").hide();
+            } else { 
+                $(".mac").show();
+            }
+
+            $("select[name='mac_exclude_mod']")
+            .val(ExcludeMode)
+            .prop("disabled", function(){return !Enable})
+            .change(function(){
+                if($("select[name='mac_exclude_mod']").val()== "BLOCKED")
+                {
+                    $(".blacklist").show();
+                    $(".whitelist").hide();
+                }
+                else{
+                    $(".blacklist").hide();
+                    $(".whitelist").show();
+                }
+                 $("#ModeSave_button").prop("disabled",false);
+            })
+
+            if(($("input[name='mac_filter_enable']").is(":checked"))&&(ExcludeMode == $("select[name='mac_exclude_mod']").val())){
+               $("#ModeSave_button").prop("disabled",true);
+            }
+
+            if(ExcludeMode=="FORWARD" && Boolean(Enable)){
+                $.map(macListObj,function(e,i){
+                    if(i==0){
+                        $("#MAC_table").empty().append(
+                            $.fn.append.apply( $("<tr/>").append(
+                                    $("<td width='5%'><input type='checkbox' disabled name='mac_element' id='MACAddress1'+1+'_checkbox'></td>"),
+                                    $("<td style='color:#FF0000' id='MACAddress'+1+'_table'>"+e.MacAddress+ '<br/>'+'此条信息为当前登录设备MAC地址.禁止修改删除操作'+"<td/>")
+                                )
+                            )
+                        )
+                    }
+                    else{
+                         $("#MAC_table").append(
+                             $.fn.append.apply( $("<tr/>").append(
+                                      $("<td width='5%'><input type='checkbox' name='mac_element' id='MACAddress1'+i+1+'_checkbox'></td>"),
+                                      $("<td id='MACAddress'+i+1+'_table'>"+e.MacAddress+"</td>"),
+                                      $("<input type='hidden' name='oid'/>").val(e._oid)                             
+                                  )
+                              )
+                         )
+                    }
+                })
+            }
+            else if(ExcludeMode=="FORWARD" && !Boolean(Enable)){
+               $("#MAC_table").empty();
+            }
+            else
+            {
+                $.fn.append.apply($("#MAC_table").empty(),
+                    $.map(macListObj,function(e,i){
+                         return $("<tr/>").append(
+                             $("<td width='5%'><input type='checkbox' name='mac_element' id='MACAddress1'+i+1+'_checkbox'>"),
+                             $("<td id='MACAddress'+i+1+'_table'>"+e.MacAddress+"</td>"),
+                             $("<input type='hidden' name='oid'/>").val(e._oid)
+                         )
+                    })
+                );
+            }  
+            $("#MAC_table tr:even").css("background","#EBEBEB");
+            $(".mac1").css("background","#191970");
+            
+            $("#ModeSave_button").click(function(){
+                $("#ModeSave_button").prop("disabled",true);
+                var post_data;
+                var post_data_forward;
+                post_data = "mac_filter_enable="+$("input[name='mac_filter_enable']").is(":checked");
+                post_data += "&mac_exclude_mod="+$("select[name='mac_exclude_mod']").val();
+                setTimeout(function(){$("#ModeSave_button").prop("disabled",false)},2000);
+                var mac_filter_enable=$("input[name='mac_filter_enable']").is(":checked");
+                var mac_exclude_mod=$("select[name='mac_exclude_mod']").val();
+                
+                if(mac_exclude_mod=="FORWARD"&& mac_filter_enable && (macListObj.length==0 ||macListObj[0].MacAddress!=local_mac)){                    
+                    post_data_forward=post_data+"&mac_address="+local_mac;
+                    $.post(location.pathname+"?save",post_data_forward)
+                    .always(function(){                                                       
+                        window.location.href=window.location.href;                                                 
+                    });
+            
+                }
+                else{
+                    $.post( location.pathname+"?save",post_data)
+                    .always(function(){
+                        window.location.href=window.location.href;
+                    })
+                }
+            });
+            
+            $("form").eq(0).submit(function(){
+                $("#MACAdd_button").prop("disabled",true);
+                var unenable;
+                var macAddress=$("input[name='mac_address']").val();
+                setTimeout(function(){$("#MACAdd_button").prop("disabled",false)},2000);
+                if(!ValidMacAddress(macAddress)) {
+                    alert("错误的MAC 地址");
+                    $("input[name='mac_address']").focus().select();
+                    return false;
+                }
+                var i=0;
+                macAddress = $.trim(macAddress).toLowerCase();
+                for(i=0;i<macListObj.length;i++)
+                {
+                    if(macListObj[i].MacAddress.toLowerCase() == macAddress)
+                    {
+                        alert("MAC地址已添加！");
+                        return false;
+                    }
+                }
+                if(ExcludeMode=="BLOCKED" ){
+                    if(local_mac.toLowerCase()==macAddress){
+                        alert("登录地址不能添加到黑名单！");
+                        return false;
+                    }
+                }
+                if(macListObj.length>99){
+                    alert("最多添加100个MAC地址。");
+                    return false;
+                }
+            });
+            
+             
+            $(".del").click(function(e){
+                $("#MACDelete_button").prop("disabled",true);
+
+                var post_oid_data="oid=";
+                setTimeout(function(){$("#MACDelete_button").prop("disabled",false)},2000);
+                     
+                $("input[name='mac_element']").map(function(i,e){
+                    if(this.checked)
+                    {
+                        post_oid_data+="|" + $(this).parent().next().next().val();           
+                    }
+                });
+            
+                $.post(location.pathname+"?del", post_oid_data)
+                .always(function(){ 
+                    window.location.href=window.location.href;
+                })
+            });
+            
+            $(".edit").click(function(){
+                $("#MACEdit_button").prop("disabled",true);
+                
+                var pNode;
+                var unenable;
+                var macAddress=$("input[name='mac_address']").val();
+                setTimeout(function(){$("#MACEdit_button").prop("disabled",false)},2000);
+                
+                if(!ValidMacAddress(macAddress)){
+                    alert("错误的MAC 地址");
+                    $("input[name='mac_address']").focus().select();
+                    return false;
+                }
+                var i=0;  
+                macAddress = $.trim(macAddress).toLowerCase();
+                for(i=0;i<macListObj.length;i++){
+                    if(macListObj[i].MacAddress.toLowerCase() == macAddress){
+                        alert("MAC地址已添加！");
+                        return false;
+                    }
+                }
+                if(ExcludeMode=="BLOCKED"){
+                     if(local_mac.toLowerCase()==macAddress){
+                        alert("登录地址不能添加到黑名单！");
+                        return false;
+                    }
+                }
+                var selectedNum=0;
+                $("input[name='mac_element']").map(function(i,e){
+                    if(this.checked){
+                        selectedNum++;
+                    } 
+                })
+                if(selectedNum>1){
+                    alert("只能选择一条信息编辑！");
+                    return false;
+                }
+                
+                $("input[name='mac_element']").map(function(i,e){
+                    if(this.checked){
+                        pNode=$(this).parent().parent();                   
+                        $.post(location.pathname+"?edit",pNode.serializeAnything()+"&mac_address="+macAddress, null, 'json')
+                        .always(function(){
+                                window.location.href=window.location.href;
+                            })
+                    }
+                })
+            }) ;
+            
+            $("#MACAddress_checkbox").click(function(){
+                if(this.checked){
+                    $("input[name='mac_element']").prop("checked",true);
+                }
+                else{
+                    $("input[name='mac_element']").prop("checked",false);
+                }    
+            });
+            
+            if(ExcludeMode== "BLOCKED")
+            {
+                $(".blacklist").show();
+                $(".whitelist").hide();
+            }
+            else{
+                $(".blacklist").hide();
+                $(".whitelist").show();
+            }
+            if(!Boolean(Enable)){
+                $("#MACAdd_button").prop("disabled",true);
+                $("#MACEdit_button").prop("disabled",true);
+                $("#MACDelete_button").prop("disabled",true);
+            }
+        }
+    })
+
+
+</script>
+    <body >
+    <blokquote>
+        <p id="Title_mac_filter_tips_lable"><label><strong >MAC过滤--请先选择过滤模式然后配置列表条目,最多100条可以被配置</strong></label><br/></br></p>
+        <table>
+            <tr>
+                <td><label  id="Title_mac_filter_Enable_checkbox _lable">启用</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="mac_filter_enable" id="MAC_filter_enable_checkbox" value= "enable">  </td>
+            </tr>
+            <tr>
+                <td width="125" height="31"><p><label  id="Title_mac_filter_excludemode_select _lable">过滤模式：</label></p></td>
+                <td width='120'>
+                    <select name='mac_exclude_mod' id='ExcludeMode_select' size="1">
+                        <option value='FORWARD'>白名单</option>
+                        <option value='BLOCKED'>黑名单</option>
+                    </select>
+                </td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <td class="blacklist" style="display:none"><text id="MACMode_text">当配置在黑名单内的MAC地址不允许被访问</text></td>
+                <td class="whitelist" style="display:none"><text id="MACMode_text">只有当配置在白名单内的MAC地址才允许被访问</text></td>
+            </tr>
+        </table>
+        <p align='center'><input type="button" id="ModeSave_button" value="保存"/></p>
+        <hr color="#5380a1" size="1">
+        <div class="mac">
+            <div style="width:100%;height:300px;overflow:auto;">
+                <table class="mac1" width="100%">
+                    <tr>
+                        <td width="5%"><input type="checkbox" id="MACAddress_checkbox"></td>
+                        <td style="color:#FFFFFF" id="MACAddress_table">MAC地址</td>
+                    </tr>
+                </table>
+                <table  width="100%">
+                    <tbody  id="MAC_table"></tbody>
+                </table>
+            </div>
+            <form action="?add" method="post">
+                <table> 
+                    <tr>
+                        <td width="30%"><label>MAC地址</label></td>
+                        <td>
+                            <input name="mac_address" id="MACAddress_input" placeholder="例如: aa:bb:cc:dd:ee:ff">     
+                        </td>
+                    </tr>
+                </table>
+                <br/>
+                <p>
+                <input type="submit" class="add" id="MACAdd_button" value="添加"/>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <input type="button" class="del"  id="MACDelete_button" value="删除"/>
+                </p>
+            </form>
+        </div>
+    </blokquote>
+    </body>
+</html>
+
+

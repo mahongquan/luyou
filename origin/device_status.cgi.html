@@ -1,0 +1,824 @@
+<!-- vim:fenc=utf-8
+-->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta HTTP-EQUIV='Pragma' CONTENT='no-cache'/>
+    <link rel="stylesheet" href='../css/main.css' type='text/css'/>
+    <script src="/js_cm/jquery-1.6.1.min.js"></script>
+    <script src="/js_cm/global.js"></script>
+    <script language=javascript>
+    $(document).ajaxSend(function( event, request, settings ) 
+        {
+            if (settings.type == "POST") 
+            {                                   
+                if (settings.data === undefined || settings.data === "") 
+                {
+                    settings.data = 'csrf_token=lbGqYtyjLMFuouxp';
+                    request.setRequestHeader( "Content-Type", "application/x-www-form-urlencoded; charset=UTF-8" );
+                }
+                else
+                {
+                    if ((settings.contentType || "").indexOf("application/x-www-form-urlencoded") < 0)
+                    {
+                        alert("Error Content-Type:" + settings.contentType);
+                        request.abort();                        
+                    }
+
+                    if (settings.data.indexOf("csrf_token") < 0)
+                    {
+                        settings.data += '&csrf_token=lbGqYtyjLMFuouxp'
+                    }                    
+                }                                    
+            }             
+        });
+    </script>
+    <script language=javascript>
+    $(document).ready(function () {
+        $("form").prepend('<input type="hidden" name="csrf_token" value="lbGqYtyjLMFuouxp" />');
+    });
+    </script>
+</head>
+
+    <script>
+        var dev_info={
+"G984":"FBB37E99",
+"Manufacturer":"NBEL",
+"ManufacturerOUI":"089C86",
+"ModelName":"G-140W-MF",
+"Description":"",
+"ProductClass":"G-140W-MF",
+"SerialNumber":"NBELFBB37E99",
+"HardwareVersion":"M_G140MF_V10",
+"SoftwareVersion":"NSB140WV00t03",
+"X_ASB_COM_Chipset":"EN7526G",
+"ModemFirmwareVersion":"",
+"EnabledOptions":"",
+"AdditionalHardwareVersion":"M_G140MF_V10",
+"AdditionalSoftwareVersion":"NSB140WV00t03",
+"SpecVersion":"1.0",
+"ProvisioningCode":"123",
+"UpTime":284539,
+"FirstUseDate":"2019-06-07T11:06:42Z",
+"X_ASB_COM_NumberOfCpuThreads":1,
+"X_ASB_COM_SwBuildTimestamp":"",
+"X_ASB_COM_DslPhyDrvVersion":"",
+"X_ASB_COM_VoiceServiceVersion":"",
+"X_ASB_COM_OLTVendor":"HWTC",
+"X_ASB_COM_SwBuildTimestamp":"",
+"DeviceType":"4+1 wifi",
+cpuPercent:10.78,
+memPercent:65,
+"DeviceLog":""
+}
+;
+        var gpon_status = { Enable:0,
+Status:'Up',
+TXPower:15315,
+RXPower:249,
+TransceiverTemperature:12697,
+SupplyVottage:32100,
+BiasCurrent:5300,
+MACAddress:'',
+MaxBitRate:'Auto',
+DuplexMode:'Auto',
+IfName:'',
+ConnectionMode:'VlanMuxMode',
+PersistentDevice:0,
+LimitedConnections:1,
+MaxConnections:1,
+duration:284488
+ };
+        var lan_ether= {
+1:{
+Enable:1,
+Status:'NoLink'
+}
+,2:{
+Enable:1,
+Status:'NoLink'
+}
+,3:{
+Enable:1,
+Status:'NoLink'
+}
+,4:{
+Enable:1,
+Status:'NoLink'
+}
+}
+; 
+        var lan_ether_gd= {
+1:{
+Enable:1,
+Status:'NoLink'
+}
+,2:{
+Enable:1,
+Status:'NoLink'
+}
+}
+;         
+        var user_info= {"Status":0,
+"Limit":10,
+"Times":0,
+"AuthStatus":1,
+"X_ASB_COM_UserName":"",
+"X_ASB_COM_RegStatus":2,
+"UserName":"",
+"Result":1
+};   
+        var wlan_config={1:{X_CT_COM_SSIDHide:0,
+X_CT_COM_RFBand:0,
+X_CT_COM_ChannelWidth:0,
+X_CT_COM_RetryTimeout:20,
+X_CT_COM_PowerValue:28,
+X_CT_COM_GuardInterval:0,
+X_CT_COM_APModuleEnable:1,
+X_CT_COM_WPSKeyWord:128,
+Enable:1,
+SSID:'CMCC-97q2',
+BSSID:'',
+AutoChannelEnable:1,
+Standard:'n',
+Status:'Up',
+BeaconType:'WPA/WPA2',
+WEPKeyIndex:1,
+BasicAuthenticationMode:'None',
+BasicEncryptionModes:'None',
+WEPEncryptionLevel:'40-bit',
+WPAAuthenticationMode:'PSKAuthentication',
+WPAEncryptionModes:'TKIPandAESEncryption',
+WMMEnable:1,
+X_ASB_COM_VirtualIfCfg_APIsolation:0,
+X_ASB_COM_11n_Control_Sideband:0,
+X_ASB_COM_VirtualIfCfg_WpaGTKRekey:0,
+X_ASB_COM_BaseCfg_MCastRate:0,
+psks:{
+1:{PreSharedKey:'ipfrxxm3'
+}},
+wepKeys:{
+1:'0987654321',2:'0987654321',3:'0987654321',4:'0987654321'}
+}
+};
+        var wlan_config_11ac={5:{X_CT_COM_SSIDHide:0,
+X_CT_COM_RFBand:1,
+X_CT_COM_ChannelWidth:3,
+X_CT_COM_RetryTimeout:20,
+X_ASB_COM_Powerlevel:100,
+X_CT_COM_PowerValue:28,
+X_CT_COM_APModuleEnable:1,
+TransmitPower:100,
+X_CT_COM_GuardInterval:0,
+RadioEnabled:1,
+X_CT_COM_WPSKeyWord:128,
+Enable:1,
+SSID:'CMCC-97q2-5G',
+Status:'Up',
+BSSID:'',
+SSIDIsolate:0,
+WPSEnable:0,
+WPSMode:'pbc',
+MACAddressControlEnabled:0,
+radiusServerIp:'0.0.0.0',
+radiusPort:'1812',
+radiusPassword:'12345678',
+X_CT_COM_Powerlevel:1,
+X_ASB_COM_radiusServerIp2:'0.0.0.0',
+X_ASB_COM_radiusPort2:'1812',
+X_ASB_COM_radiusPassword2:'12345678',
+AutoChannelEnable:1,
+Channel:0,
+ChannelsInUse:'36',
+PossibleChannels:'36,40,44,48,52,56,60,64,149,153,157,161,165;36,40,44,48,52,56,60,64,149,153,157,161,165;36,40,44,48,52,56,60,64,149,153,157,161',
+Standard:'ac',
+BeaconType:'WPA/WPA2',
+WEPKeyIndex:1,
+BasicAuthenticationMode:'None',
+BasicEncryptionModes:'None',
+WEPEncryptionLevel:'40-bit',
+WPAAuthenticationMode:'PSKAuthentication',
+WPAEncryptionModes:'TKIPandAESEncryption',
+WMMEnable:1,
+MaxBitRate:'Auto',
+X_ASB_COM_11n_MCS_Index:0,
+X_ASB_COM_InMgtDomain:2,
+X_ASB_COM_routeMode:2,
+X_ASB_COM_BaseCfg_GlobalMaxAssoc:40,
+X_ASB_COM_VirtualIfCfg_MaxAssoc:40,
+DevicePassword:0,
+psks:{
+1:{PreSharedKey:'aXBmcnh4bTM='
+}},
+wepKeys:{
+1:'MDk4NzY1NDMyMQ=='}
+}
+};
+        var wan_conns = [ {_oid:1,
+X_ASB_COM_ConnType:0,
+X_ASB_COM_HybridgeEnabled:0,
+xponLinkCfg:{Enable:0,
+Mode:2,
+VLANIDMark:4003,
+P_802_1pMark:7
+},ipConns:[{_type:'ip',
+ConnectionStatus:'Connected',
+PossibleConnectionTypes:'Unconfigured, IP_Routed, IP_Bridged',
+ConnectionType:'IP_Routed',
+Name:'1_TR069_R_VID_4003',
+X_CT_COM_LanInterface:'',
+X_CT_COM_ServiceList:'TR069',
+X_CT_COM_IPMode:1,
+AddressingType:'DHCP',
+ExternalIPAddress:'100.216.204.209',
+LastConnectionError:'',
+X_CT_COM_IPv6ConnStatus:'Unconfigured'
+}],pppConns:[]},{_oid:2,
+X_ASB_COM_ConnType:0,
+X_ASB_COM_HybridgeEnabled:0,
+xponLinkCfg:{Enable:1,
+Mode:2,
+VLANIDMark:10,
+P_802_1pMark:4
+},ipConns:[],pppConns:[{_type:'ppp',
+ConnectionStatus:'Connected',
+PossibleConnectionTypes:'Unconfigured, IP_Routed',
+ConnectionType:'IP_Routed',
+X_ASB_COM_PppBridgeKey:0,
+Name:'2_INTERNET_R_VID_10',
+X_CT_COM_LanInterface:'',
+X_CT_COM_ServiceList:'INTERNET',
+X_CT_COM_IPMode:3,
+ExternalIPAddress:'10.48.83.199',
+LastConnectionError:'ERROR_NONE',
+X_CT_COM_IPv6ConnStatus:'Connected'
+}]},{_oid:3,
+X_ASB_COM_ConnType:0,
+X_ASB_COM_HybridgeEnabled:0,
+xponLinkCfg:{Enable:1,
+Mode:2,
+VLANIDMark:1010,
+P_802_1pMark:5
+},ipConns:[{_type:'ip',
+ConnectionStatus:'Connected',
+PossibleConnectionTypes:'Unconfigured, IP_Routed, IP_Bridged',
+ConnectionType:'IP_Bridged',
+Name:'3_OTHER_B_VID_1010',
+X_CT_COM_LanInterface:'InternetGatewayDevice.LANDevice.1.LANEthernetInterfaceConfig.2',
+X_CT_COM_ServiceList:'OTHER',
+X_CT_COM_IPMode:1,
+AddressingType:'DHCP',
+ExternalIPAddress:'',
+LastConnectionError:'',
+X_CT_COM_IPv6ConnStatus:'Unconfigured'
+}],pppConns:[]} ];
+        var pre_cfg = { "OperatorID":"BJSC",
+X_ASB_COM_PONRegType:4,
+X_ASB_COM_ITMSType:3
+};
+        var gpon_info = { HexSLID:1,
+Password:'BJ13475759'
+};
+        var pon_power = { "TXPower":"1.82",
+"RXPower":"-16.27" 
+};
+        var olt_type=["ALCL","FHXX","HWTC","ZTEX"];
+        var reg_status;
+        
+            reg_status = 1;
+        
+        $(function(){
+
+            $(".vname1").css({ "background-color":"#e0e0e0", "color":"#5f5f5f", "font-weight":"bold" });
+
+            $("#Table_base2_2_table").html(dev_info.Manufacturer);
+            $("#Table_base3_2_table").html(dev_info.ModelName);
+            $("#Table_base4_2_table").html((dev_info.Manufacturer+dev_info.G984).toUpperCase());
+            $("#Table_base5_2_table").html(dev_info.HardwareVersion);
+            $("#Table_base6_2_table").html(dev_info.SoftwareVersion);
+            $("#equipment_identifier").html((dev_info.SerialNumber).toUpperCase());
+            
+               
+            with(gpon_status){
+                $("#Table_pon2_2_table").html(
+                   {
+                  'Initializing':'未连接', 
+                  'EstablishingLink':'未连接',
+                  'Up':'已连接',
+                  'NoSignal':'未连接',
+                  'LowSignalPower':'未连接'
+                   }[Status]);
+                    
+                var to_dbm=function(mw){
+                    return Math.floor((Math.log(parseInt(mw)*0.0001)/Math.LN10) *1000)/100
+                }
+                
+                if (typeof(duration) == "undefined"){
+                    $("#Table_pon3_2_table").hide();
+                    $("#Table_pon3_1_table").hide();
+                } else {
+                    var hour= Math.floor(duration/3600);
+                    var minuter=Math.floor(duration/60-hour*60);
+                    var second=Math.floor(duration-hour*3600-minuter*60);
+                    $("#Table_pon3_2_table").html(hour+"小时"+minuter+"分"+second+"秒");
+                }
+                if(Status=="NoSignal"){
+                    $("#Table_pon4_2_table").html("-infdBm");
+                    $("#Table_pon5_2_table").html("-infdBm");                
+                }else{
+                    $("#Table_pon4_2_table").html(pon_power.TXPower+"dBm");
+                    $("#Table_pon5_2_table").html(pon_power.RXPower+"dBm");
+                }
+            }
+            
+            if((pre_cfg.X_ASB_COM_PONRegType==1) || (pre_cfg.X_ASB_COM_PONRegType==4))
+            {
+                $("#Table_reg1_1_table").html("Password:");
+                $("#Table_reg1_2_table").html(gpon_info.Password);
+                $("#Table_reg2_2_table").html(
+                {
+                       0:'未认证',
+                       1:'已认证',
+                       2:'认证失败2',
+                       3:'认证失败3',
+                       4:'认证失败4',
+                       5:'认证失败5'
+                }[user_info.AuthStatus]);
+            }
+            else if(pre_cfg.X_ASB_COM_PONRegType==2)
+            { 
+                $("#Table_reg1_1_table").html("逻辑ID:");
+                $("#Table_reg1_2_table").html(user_info.UserName);//ALU01993591
+                $("#Table_reg2_2_table").html(
+                {
+                       0:'未认证',
+                       1:'已认证',
+                       2:'LOID不存在',
+                       3:'LOID正确，LOID密码错误',
+                       4:'LOID正在被其他ONU使用',
+                       5:'未知错误'
+                }[user_info.AuthStatus]);
+            }
+            
+            var type= dev_info.X_ASB_COM_OLTVendor;
+            if($.inArray(type, olt_type)!=-1){
+                $("#Table_reg3_4_table").html(
+                    {
+                        ALCL:'贝尔OLT',                //贝尔OLT
+                        FHXX:'烽火OLT',                //烽火OLT
+                        HWTC:'华为OLT',               //华为OLT
+                        ZTEX:'中兴OLT'                 //中兴OLT
+                    }[dev_info.X_ASB_COM_OLTVendor]);
+            }else{
+                $("#Table_reg3_4_table").html(dev_info.X_ASB_COM_OLTVendor);
+            }
+            
+            $("#Table_reg3_2_table").html(
+            {
+                99:'未注册',
+                0:(user_info.Result==1)?'注册成功':
+                  ((user_info.Result==99)?'等待下发数据':
+                  ((user_info.Result==0)?'正在下发数据':'注册失败')),
+                1:'注册失败',
+                2:'注册失败',
+                3:'注册失败',
+                4:'注册失败',
+                5:'注册成功'
+            }[user_info.Status]); 
+             //FR:ALU02094312
+            
+            $.fn.append.apply($("#lanlist1"),
+                $.map(lan_ether,function(e,i){
+                    with(e){
+                        return $.fn.append.apply($("<tr/>"),
+                            $.map([i,
+                            {  "Up":"已连接设备",
+                                "NoLink":"未连接设备"
+                             }[Status]],
+                                function(s,j){
+                                    if(j==0)return $("<td/>")
+                                    .css({ "background-color":"#e0e0e0", "color":"#5f5f5f", "font-weight":"bold","width":"30%" })
+                                    .html("网口"+i+":");
+                                    return $("<td/>").html(s);
+                                }
+                            )
+                        );
+                    }
+                })
+            );  
+            
+            
+            $("#Table_base1_2_table").html("GPON");
+            $("#Table_pon1_2_table").html("GPON");
+
+            
+            if(wlan_config!={}){
+                var wlan_conn=wlan_config[1];
+                with(wlan_conn){
+                    $("#Table_wifi1_2_table").html(SSID);
+                    var password="";
+                    if(BeaconType=='None'||(BeaconType=='Basic'&&BasicAuthenticationMode=='OpenSystem')){
+                        password="";
+                    } else if(BeaconType=='Basic'){
+                        password=wepKeys[WEPKeyIndex];
+                    }
+                    else{
+                        password=psks[1].PreSharedKey;
+                    }
+                    $("#Table_wifi2_2_table").html(password);  
+                    
+                    $("#Table_wifi3_2_table").html(
+                    {
+                           "Disabled":'关闭',
+                           "Up":'开启'
+                    }[Status])
+                    
+                    $("#Table_wifi4_2_table").html(
+                          {"None":"None",
+                            "Basic":"WEP",
+                            "WPA":"WPA Pre-Share Key",
+                            "WPA2":"WPA2 Pre-Share Key",
+                            "11i":"WPA2 Pre-Share Key",
+                            "WPA/WPA2":"WPA/WPA2 Pre-Share Key",
+                            "WPAand11i":"WPA/WPA2 Pre-Share Key"
+                            }[BeaconType]);
+                }
+            }
+            else{
+                $("#Table_wifi1_2_table").html("未配置");  
+                $("#Table_wifi2_2_table").html("未配置");            
+                $("#Table_wifi3_2_table").html("未配置");            
+                $("#Table_wifi4_2_table").html("未配置");            
+          
+            }
+            
+            
+            
+            if(wlan_config_11ac!={}){
+                var wlan_conn=wlan_config_11ac[5];
+                with(wlan_conn){
+                    $("#Table_wifi1_2_table_5G").html(SSID);
+                    var password5G="";
+                    if(BeaconType=='None'||(BeaconType=='Basic'&&BasicAuthenticationMode=='OpenSystem')){
+                        password5G="";
+                    } else if(BeaconType=='Basic'){
+                        password5G=base64decode(wepKeys[WEPKeyIndex]);
+                    }
+                    else{
+                        password5G=base64decode(psks[1].PreSharedKey);
+                    }
+                    $("#Table_wifi2_2_table_5G").html(password5G);  
+                    
+                    $("#Table_wifi3_2_table_5G").html(
+                    {
+                           "Disabled":'关闭',
+                           "Up":'开启'
+                    }[Status])
+                    
+                    $("#Table_wifi4_2_table_5G").html(
+                          {"None":"None",
+                            "Basic":"WEP",
+                            "WPA":"WPA Pre-Share Key",
+                            "WPA2":"WPA2 Pre-Share Key",
+                            "11i":"WPA2 Pre-Share Key",
+                            "WPA/WPA2":"WPA/WPA2 Pre-Share Key",
+                            "WPAand11i":"WPA/WPA2 Pre-Share Key"
+                            }[BeaconType]);
+                }
+            }
+            else{
+                $("#Table_wifi1_2_table_5G").html("未配置");  
+                $("#Table_wifi2_2_table_5G").html("未配置");
+                $("#Table_wifi3_2_table_5G").html("未配置");
+                $("#Table_wifi4_2_table_5G").html("未配置");
+            }
+             
+             
+             
+            var business_info=$("#business_info");
+            var internet_ConnectionStatus={},internet_ConnectionType={},internet_X_CT_COM_IPMode={},internet_X_CT_COM_LanInterface={},internet_Name={};
+            var iTV_ConnectionStatus={}, iTV_ConnectionType={}, iTV_X_CT_COM_IPMode={}, iTV_X_CT_COM_LanInterface={}, iTV_Name={};
+            var VOIP_ConnectionStatus={}, VOIP_ConnectionType={}, VOIP_X_CT_COM_IPMode={}, VOIP_X_CT_COM_LanInterface={}, VOIP_Name={};
+            var TR069_ConnectionStatus={},TR069_ConnectionType={}, TR069_X_CT_COM_IPMode={}, TR069_X_CT_COM_LanInterface={}, TR069_Name={};
+            var j=0,m=0,n=0,q=0;
+            for(var idx in wan_conns){
+                wan_conns[idx]._obj=null;
+                with(wan_conns[idx]){
+                    if(ipConns.length){
+                        _obj=ipConns[0];
+                    }else if(pppConns.length){
+                        _obj=pppConns[0];
+                    }else{
+                        continue;
+                    }
+
+                    if(_obj.X_CT_COM_LanInterface!=""){                    	
+                        var sarray = _obj.X_CT_COM_LanInterface.split(",");
+                        var i,b=0,nowire={};
+                        var wired="",wireless="";
+                        for(i=0;i<sarray.length;i++){
+                            if(sarray[i]!=""){
+                                if(sarray[i].split(".")[3].length ==26){
+                                    wired+="网口"+sarray[i].split(".")[4]+",";
+                                } else if(sarray[i].split(".")[3].length ==17){
+                                    nowire[b]=sarray[i].split(".")[4];
+                                    var k=nowire[b];
+                                    if(k>4){
+                                        if (!$.isEmptyObject(wlan_config_11ac)) {
+                                            nowire[b]=wlan_config_11ac[k].SSID;
+                                        }
+                                    } else {
+                                        nowire[b]=wlan_config[k].SSID;
+                                    }
+                                    wireless+=nowire[b]+",";
+                                    b++;
+                                }
+                            }
+                        }
+                    }
+                              
+                    if((_obj.X_CT_COM_ServiceList).search("INTERNET")!=-1){
+
+                        if(_obj.X_CT_COM_IPMode==1 ||_obj.X_CT_COM_IPMode==3){
+                            internet_ConnectionStatus[j]=_obj.ConnectionStatus?_obj.ConnectionStatus=="Connected"?'可用':_obj.ConnectionStatus=="Unconfigured"?'未配置':'不可用':""; 
+                        }
+                        else if(_obj.X_CT_COM_IPMode==2){
+                            internet_ConnectionStatus[j]=_obj.X_CT_COM_IPv6ConnStatus?_obj.X_CT_COM_IPv6ConnStatus=="Connected"?'可用':_obj.X_CT_COM_IPv6ConnStatus=="Unconfigured"?'未配置':'不可用':""; 
+                        }                    
+                        internet_ConnectionType[j]=(_obj.ConnectionType=="PPPoE_Bridged"||_obj.ConnectionType=="IP_Bridged")?"桥接(电脑拨号)":_obj.ConnectionType=="IP_Routed"?"路由(网关拨号)":"未配置";
+                        internet_X_CT_COM_IPMode[j]=_obj.X_CT_COM_IPMode==1?"IPV4":_obj.X_CT_COM_IPMode==2?"IPV6":"IPV4&IPV6";
+                        internet_X_CT_COM_LanInterface[j]=_obj.X_CT_COM_LanInterface?"有线:"+wired+" 无线:"+ wireless:"";
+                        internet_Name[j]=_obj.Name;
+                        j++;
+                    }
+                    
+                    if(((_obj.X_CT_COM_ServiceList).search("OTHER")!=-1)||((_obj.X_CT_COM_ServiceList).search("IPTV")!=-1)){
+                        if(_obj.X_CT_COM_IPMode==1||_obj.X_CT_COM_IPMode==3){
+                            iTV_ConnectionStatus[m]=_obj.ConnectionStatus?_obj.ConnectionStatus=="Connected"?'可用':_obj.ConnectionStatus=="Unconfigured"?'未配置':'不可用':"" ; 
+                        }
+                        else if(_obj.X_CT_COM_IPMode==2){
+                            iTV_ConnectionStatus[m]=_obj.X_CT_COM_IPv6ConnStatus?_obj.X_CT_COM_IPv6ConnStatus=="Connected"?'可用':_obj.X_CT_COM_IPv6ConnStatus=="Unconfigured"?'未配置':'不可用':""; 
+                        }                    
+                        iTV_ConnectionType[m]=(_obj.ConnectionType=="PPPoE_Bridged"||_obj.ConnectionType=="IP_Bridged")?"桥接":_obj.ConnectionType=="IP_Routed"?"路由":"未配置";
+                        iTV_X_CT_COM_IPMode[m]=_obj.X_CT_COM_IPMode==1?"IPV4":_obj.X_CT_COM_IPMode==2?"IPV6":"IPV4&IPV6";
+                        iTV_X_CT_COM_LanInterface[m]=_obj.X_CT_COM_LanInterface?"有线:"+wired+" 无线:"+ wireless:"";
+                        iTV_Name[m]=_obj.Name;
+                        
+                        m++; 
+                    }
+                   
+                    if((_obj.X_CT_COM_ServiceList).search("VOIP")!=-1){
+                        if(_obj.X_CT_COM_IPMode==1||_obj.X_CT_COM_IPMode==3){
+                        VOIP_ConnectionStatus[n]=_obj.ConnectionStatus?_obj.ConnectionStatus=="Connected"?'可用':_obj.ConnectionStatus=="Unconfigured"?'未配置':'不可用':"";
+                        }
+                        else if(_obj.X_CT_COM_IPMode==2){
+                        VOIP_ConnectionStatus[n]=_obj.X_CT_COM_IPv6ConnStatus?_obj.X_CT_COM_IPv6ConnStatus=="Connected"?'可用':_obj.X_CT_COM_IPv6ConnStatus=="Unconfigured"?'未配置':'不可用':""; 
+                        }                                        
+                        VOIP_ConnectionType[n]=_obj.ConnectionType=="IP_Routed"?"路由":"未配置";
+                        VOIP_X_CT_COM_IPMode[n]=_obj.X_CT_COM_IPMode==1?"IPV4":_obj.X_CT_COM_IPMode==2?"IPV6":"IPV4&IPV6";
+                        VOIP_X_CT_COM_LanInterface[n]=_obj.X_CT_COM_LanInterface?"有线:"+wired+" 无线:"+wireless:"";
+                        VOIP_Name[n]=_obj.Name;
+                        
+                        n++; 
+                    }
+                    if((_obj.X_CT_COM_ServiceList).search("TR069")!=-1){
+
+                        if(_obj.X_CT_COM_IPMode==1||_obj.X_CT_COM_IPMode==3){
+                        TR069_ConnectionStatus[q]=_obj.ConnectionStatus?_obj.ConnectionStatus=="Connected"?'可用':_obj.ConnectionStatus=="Unconfigured"?'未配置':'不可用':"" ; 
+                        }
+                        else if(_obj.X_CT_COM_IPMode==2){
+                        TR069_ConnectionStatus[q]=_obj.X_CT_COM_IPv6ConnStatus?_obj.X_CT_COM_IPv6ConnStatus=="Connected"?'可用':_obj.X_CT_COM_IPv6ConnStatus=="Unconfigured"?'未配置':'不可用':""; 
+                        }                                             
+                        TR069_ConnectionType[q]=_obj.ConnectionType=="IP_Routed"?"路由":"未配置";
+                        TR069_X_CT_COM_IPMode[q]=_obj.X_CT_COM_IPMode==1?"IPV4":_obj.X_CT_COM_IPMode==2?"IPV6":"IPV4&IPV6";
+                        TR069_X_CT_COM_LanInterface[q]=_obj.X_CT_COM_LanInterface?"有线:"+wired+" 无线:"+ wireless:"";
+                        TR069_Name[q]=_obj.Name;
+                        q++;
+                    }                   
+                }
+            }
+            var k;
+            
+            
+                if("undefined"==typeof internet_Name[0]){
+                    business_info.append(
+                        $.fn.append.apply( $("<tr/>").append(
+                        $("<td id='Table_wan1_1_user_table'><a href='config_guide.cgi?guide'>上网</a></td>"),                       
+                        $("<td id='Table_wan1_2_table'>"+'未配置'+"</td>"),
+                        $("<td id='Table_wan1_3_table'>"+'未配置'+"</td>"),
+                        $("<td id='Table_wan1_4_table'>"+'未配置'+"</td>"),
+                        $("<td id='Table_wan1_5_table'>"+'未配置'+"</td>"),
+                        $("<td id='Table_wan1_6_table'>"+'未配置'+"</td>")                           
+                        )
+                    )
+                    ) 
+                } 
+                else
+                {
+                    if(internet_ConnectionStatus[0]=="Connected"){
+                        business_info.append(
+                            $.fn.append.apply( $("<tr/>").append(
+                            $("<td id='Table_wan1_1_user_table'>"+'上网'+"</td>"),
+                            $("<td id='Table_wan1_2_table'>"+internet_ConnectionStatus[0]+"</td>"),
+                            $("<td id='Table_wan1_3_table'>"+internet_ConnectionType[0]+"</td>"),
+                            $("<td id='Table_wan1_4_table'>"+internet_X_CT_COM_IPMode[0]+"</td>"),
+                            $("<td id='Table_wan1_5_table'>"+internet_X_CT_COM_LanInterface[0]+"</td>"),
+                            $("<td id='Table_wan1_6_table'>"+internet_Name[0]+"</td>")                           
+                            )
+                        )
+                        )
+                    }
+                    else
+                    {
+                        business_info.append(
+                            $.fn.append.apply( $("<tr/>").append(
+                            $("<td id='Table_wan1_1_user_table'><a href='config_guide.cgi?guide'>上网</a></td>"),                       
+                            $("<td id='Table_wan1_2_table'>"+internet_ConnectionStatus[0]+"</td>"),
+                            $("<td id='Table_wan1_3_table'>"+internet_ConnectionType[0]+"</td>"),
+                            $("<td id='Table_wan1_4_table'>"+internet_X_CT_COM_IPMode[0]+"</td>"),
+                            $("<td id='Table_wan1_5_table'>"+internet_X_CT_COM_LanInterface[0]+"</td>"),
+                            $("<td id='Table_wan1_6_table'>"+internet_Name[0]+"</td>")                           
+                            )
+                        )
+                        )
+                        $("#Table_wan1_1_user_table").attr("rowspan",j);
+                        if(j>1){
+                           for(k=1;k<j;k++){
+                               business_info.append(
+                                   $.fn.append.apply( $("<tr/>").append(
+                                   $("<td>"+internet_ConnectionStatus[k]+"</td>"),
+                                   $("<td>"+internet_ConnectionType[k]+"</td>"),
+                                   $("<td>"+internet_X_CT_COM_IPMode[k]+"</td>"),
+                                   $("<td>"+internet_X_CT_COM_LanInterface[k]+"</td>"),
+                                   $("<td>"+internet_Name[k]+"</td>")                           
+                                   )
+                               )
+                               )
+                           }
+                        }
+                    }
+                }
+                
+
+                if("undefined"==typeof iTV_Name[0]){
+                    business_info.append(
+                        $.fn.append.apply( $("<tr/>").append(
+                        $("<td id='Table_wan4_1_table'>"+'iTV'+"</td>"),
+                        $("<td id='Table_wan4_2_table'>"+'未配置'+"</td>"),
+                        $("<td id='Table_wan4_3_table'>"+'未配置'+"</td>"),
+                        $("<td id='Table_wan4_4_table'>"+'未配置'+"</td>"),
+                        $("<td id='Table_wan4_5_table'>"+'未配置'+"</td>"),
+                        $("<td id='Table_wan4_6_table'>"+'未配置'+"</td>")                           
+                        )
+                    )
+                    )  
+                } 
+                else
+                {
+                    business_info.append(
+                        $.fn.append.apply( $("<tr/>").append(
+                        $("<td id='Table_wan4_1_table'>"+'iTV'+"</td>"),
+                        $("<td id='Table_wan4_2_table'>"+iTV_ConnectionStatus[0]+"</td>"),
+                        $("<td id='Table_wan4_3_table'>"+iTV_ConnectionType[0]+"</td>"),
+                        $("<td id='Table_wan4_4_table'>"+iTV_X_CT_COM_IPMode[0]+"</td>"),
+                        $("<td id='Table_wan4_5_table'>"+iTV_X_CT_COM_LanInterface[0]+"</td>"),
+                        $("<td id='Table_wan4_6_table'>"+iTV_Name[0]+"</td>")                           
+                        )
+                    )
+                    )  
+                    $("#Table_wan4_1_table").attr("rowspan",m);
+                    if(m>1){                    
+                        for(k=1;k<m;k++){
+                            business_info.append(
+                                $.fn.append.apply( $("<tr/>").append(
+                                $("<td>"+iTV_ConnectionStatus[k]+"</td>"),
+                                $("<td>"+iTV_ConnectionType[k]+"</td>"),
+                                $("<td>"+iTV_X_CT_COM_IPMode[k]+"</td>"),
+                                $("<td>"+iTV_X_CT_COM_LanInterface[k]+"</td>"),
+                                $("<td>"+iTV_Name[k]+"</td>")                           
+                                )
+                            )
+                            )  
+                        }
+                    }
+                }
+                if("undefined"==typeof VOIP_Name[0]){
+                    business_info.append(
+                        $.fn.append.apply( $("<tr/>").append(
+                        $("<td id='Table_wan5_1_table'>"+'语音'+"</td>"),
+                        $("<td id='Table_wan5_2_table'>"+'未配置'+"</td>"),
+                        $("<td id='Table_wan5_3_table'>"+'未配置'+"</td>"),
+                        $("<td id='Table_wan5_4_table'>"+'未配置'+"</td>"),
+                        $("<td id='Table_wan5_5_table'>"+'未配置'+"</td>"),
+                        $("<td id='Table_wan5_6_table'>"+'未配置'+"</td>")                           
+                        )
+                    )
+                    )  
+                }
+                else
+                {
+                    business_info.append(
+                        $.fn.append.apply( $("<tr/>").append(
+                        $("<td id='Table_wan5_1_table'>"+'语音'+"</td>"),
+                        $("<td id='Table_wan5_2_table'>"+VOIP_ConnectionStatus[0]+"</td>"),
+                        $("<td id='Table_wan5_3_table'>"+VOIP_ConnectionType[0]+"</td>"),
+                        $("<td id='Table_wan5_4_table'>"+VOIP_X_CT_COM_IPMode[0]+"</td>"),
+                        $("<td id='Table_wan5_5_table'>"+VOIP_X_CT_COM_LanInterface[0]+"</td>"),
+                        $("<td id='Table_wan5_6_table'>"+VOIP_Name[0]+"</td>")                           
+                        )
+                    )
+                    )  
+                    $("#Table_wan5_1_table").attr("rowspan",n);
+                    if(n>1){
+                        for(k=1;k<n;k++){
+                            business_info.append(
+                                $.fn.append.apply( $("<tr/>").append(
+                                $("<td>"+VOIP_ConnectionStatus[k]+"</td>"),
+                                $("<td>"+VOIP_ConnectionType[k]+"</td>"),
+                                $("<td>"+VOIP_X_CT_COM_IPMode[k]+"</td>"),
+                                $("<td>"+VOIP_X_CT_COM_LanInterface[k]+"</td>"),
+                                $("<td>"+VOIP_Name[k]+"</td>")                           
+                                )
+                            )
+                            )  
+                        }
+                    }
+                }
+                if("undefined"==typeof TR069_Name[0]){
+                    business_info.append(
+                        $.fn.append.apply( $("<tr/>").append(
+                        $("<td id='Table_wan6_1_table'>"+'管理'+"</td>"),
+                        $("<td id='Table_wan6_2_table'>"+'未配置'+"</td>"),
+                        $("<td id='Table_wan6_3_table'>"+'未配置'+"</td>"),
+                        $("<td id='Table_wan6_4_table'>"+'未配置'+"</td>"),
+                        $("<td id='Table_wan6_5_table'>"+'未配置'+"</td>"),
+                        $("<td id='Table_wan6_6_table'>"+'未配置'+"</td>")                           
+                        )
+                    )
+                    )  
+                } 
+                else
+                {
+                    business_info.append(
+                        $.fn.append.apply( $("<tr/>").append(
+                        $("<td id='Table_wan6_1_table'>"+'管理'+"</td>"),
+                        $("<td id='Table_wan6_2_table'>"+TR069_ConnectionStatus[0]+"</td>"),
+                        $("<td id='Table_wan6_3_table'>"+TR069_ConnectionType[0]+"</td>"),
+                        $("<td id='Table_wan6_4_table'>"+TR069_X_CT_COM_IPMode[0]+"</td>"),
+                        $("<td id='Table_wan6_5_table'>"+TR069_X_CT_COM_LanInterface[0]+"</td>"),
+                        $("<td id='Table_wan6_6_table'>"+TR069_Name[0]+"</td>")                           
+                        )
+                    )
+                    )  
+                    $("#Table_wan6_1_table").attr("rowspan",q);
+                    if(q>1){
+                        for(k=1;k<q;k++){
+                            business_info.append(
+                                $.fn.append.apply( $("<tr/>").append(
+                                $("<td>"+TR069_ConnectionStatus[k]+"</td>"),
+                                $("<td>"+TR069_ConnectionType[k]+"</td>"),
+                                $("<td>"+TR069_X_CT_COM_IPMode[k]+"</td>"),
+                                $("<td>"+TR069_X_CT_COM_LanInterface[k]+"</td>"),
+                                $("<td>"+TR069_Name[k]+"</td>")                           
+                                )
+                            )
+                            )  
+                        }    
+                    }
+                }
+           
+        });
+    </script>
+    <body>
+    <table width="100%" height="40px" bgcolor="#A9A9A9">
+        <tr style="text-indent:0.5em; color:#0000FF">
+            <td id="Title_base_lable"><label><b>设备基本信息</b><label></td>
+        </tr>
+    </table>
+    <br/>
+    <table width="100%" class="wb">
+    
+        <tr> 
+            <td class='vname1' width="30%" id="Table_base3_1_table"><b>设备型号:</b></td>
+            <td id="Table_base3_2_table"></td>
+        </tr>
+        <tr>
+            <td class='vname1' width="30%"><b>设备标识号:</b></td>
+            <td id="equipment_identifier"</td>
+        </tr> 
+                    
+        <tr> 
+            <td class='vname1' width="30%" id="Table_base5_1_table"><b>硬件版本:</b></td>
+            <td id="Table_base5_2_table"></td>
+        </tr>  
+        <tr> 
+            <td class='vname1' width="30%" id="Table_base6_1_table"><b>软件版本:</b></td>
+            <td id="Table_base6_2_table"></td>
+        </tr>
+                
+          
+    </table>
+    <br/>
+   
+    </body>
+</html>

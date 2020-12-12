@@ -1,0 +1,497 @@
+<!--
+ vim:fenc=utf-8
+-->
+<html>
+    <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta HTTP-EQUIV='Pragma' CONTENT='no-cache'/>
+    <link rel="stylesheet" href='../css/main.css' type='text/css'/>
+    <script src="/js_cm/jquery-1.6.1.min.js"></script>
+    <script src="/js_cm/global.js"></script>
+    <script language=javascript>
+    $(document).ajaxSend(function( event, request, settings ) 
+        {
+            if (settings.type == "POST") 
+            {                                   
+                if (settings.data === undefined || settings.data === "") 
+                {
+                    settings.data = 'csrf_token=miygolAgaluMtPeC';
+                    request.setRequestHeader( "Content-Type", "application/x-www-form-urlencoded; charset=UTF-8" );
+                }
+                else
+                {
+                    if ((settings.contentType || "").indexOf("application/x-www-form-urlencoded") < 0)
+                    {
+                        alert("Error Content-Type:" + settings.contentType);
+                        request.abort();                        
+                    }
+
+                    if (settings.data.indexOf("csrf_token") < 0)
+                    {
+                        settings.data += '&csrf_token=miygolAgaluMtPeC'
+                    }                    
+                }                                    
+            }             
+        });
+    </script>
+    <script language=javascript>
+    $(document).ready(function () {
+        $("form").prepend('<input type="hidden" name="csrf_token" value="miygolAgaluMtPeC" />');
+    });
+    </script>
+</head>
+
+    <script src="../js_cm/wlan_config_pswd_toggle.js"></script>
+    <script>
+        $(document).ready(function() {
+            togglePassword($("#togglePassword"));
+        });
+    </script>
+    <script> 
+        var wlan_config={1:{X_ASB_COM_EnhancedPower:0,
+X_CT_COM_SSIDHide:0,
+X_CT_COM_RFBand:0,
+X_CT_COM_ChannelWidth:0,
+X_CT_COM_RetryTimeout:20,
+Prefix:'CMCC-',
+X_CT_COM_Powerlevel:1,
+X_CT_COM_PowerValue:28,
+TransmitPower:100,
+X_CT_COM_GuardInterval:0,
+X_CT_COM_APModuleEnable:1,
+X_CT_COM_WPSKeyWord:128,
+WPSEnable:0,
+WPSMode:'pbc',
+Enable:1,
+SSID:'CMCC-97q2',
+Status:'Up',
+AutoChannelEnable:1,
+PossibleChannels:'1,2,3,4,5,6,7,8,9,10,11,12,13;1,2,3,4,5,6,7,8,9,10,11,12,13;1,2,3,4,5,6,7,8,9,10,11,12,13',
+Channel:0,
+ChannelsInUse:'11',
+Standard:'n',
+BeaconType:'WPA/WPA2',
+WEPKeyIndex:1,
+BasicAuthenticationMode:'None',
+WEPEncryptionLevel:'40-bit',
+WPAAuthenticationMode:'PSKAuthentication',
+WPAEncryptionModes:'TKIPandAESEncryption',
+psks:{
+1:{PreSharedKey:'aXBmcnh4bTM='
+}},
+wepKeys:{
+1:'MDk4NzY1NDMyMQ==',2:'MDk4NzY1NDMyMQ==',3:'MDk4NzY1NDMyMQ==',4:'MDk4NzY1NDMyMQ=='}
+}
+};
+        var wpa_encrypt_val=["AESEncryption","TKIPEncryption","TKIPandAESEncryption"];
+        var wpa_encrypt_html=["AES","TKIP","TKIP+AES"]; 
+        wl_40M_MaxBitRates=[
+            "Auto",
+            "13.5 Mbps",
+            "27 Mbps",
+            "40.5 Mbps",
+            "54 Mbps",
+            "81 Mbps",
+            "108 Mbps",
+            "121.5 Mbps",
+            "135 Mbps",
+            "27 Mbps",
+            "54 Mbps",
+            "81 Mbps",
+            "108 Mbps",
+            "162 Mbps",
+            "216 Mbps",
+            "243 Mbps",
+            "270 Mbps"
+        ]
+        wl_20M_MaxBitRates=[
+            "Auto",
+            "6.5 Mbps",
+            "13 Mbps",
+            "19.5 Mbps",
+            "26 Mbps",
+            "39 Mbps",
+            "52 Mbps",
+            "58.5 Mbps",
+            "65 Mbps",
+            "13 Mbps",
+            "26 Mbps",
+            "39 Mbps",
+            "52 Mbps",
+            "78 Mbps",
+            "104 Mbps",
+            "117 Mbps",
+            "130 Mbps"
+        ]
+        
+        function get_channel_list(bandwidth) {
+            var channelList = new Array();
+            var channels = wlan_config[1].PossibleChannels;
+            var res = channels.split(";");
+            for (var i in res) {
+                var int = res[i].split(",");
+                var channelElememt = new Array();
+                channelElememt.push("0");
+                for (var j in int) {
+                    channelElememt.push(int[j]);
+                }
+                channelList.push(channelElememt);
+            }
+            return channelList[bandwidth];
+        }
+        
+        $(function(){
+            var g_ap_enable=wlan_config[1].X_CT_COM_APModuleEnable;
+            $(":input[name='ap_enable']")
+            .prop("checked",Boolean(g_ap_enable))
+            .click(function(){
+                ($(this).is(":checked")?$.fn.show:$.fn.hide).call( $(".apsetup"));
+                if($(this).is(":checked")&&wlan_config[$("select[name='ssidx']").val()].Enable){
+                    $(":input[name='ssid_enable']").prop("checked",true).triggerHandler("click");
+                }
+            })
+            setTimeout(function(){
+                $(":input[name='ap_enable']").triggerHandler("click");
+                $("select[name='ssidx']").change();
+            },100);
+            $(":input[name='ssid_enable']").click(function(){
+                $(".wlconfig input,.wlconfig select").prop("disabled",($(this).is(":checked"))?false:true);
+            })
+            $("select[name='wepKeyBit']").change(function(){
+                var ssid_en=$(":input[name='ssid_enable']").val(); 
+                if($("select[name='wepKeyBit']").val()=='40-bit'){
+                    $(this).next().html("64位无线网络密钥需输入5个ASCII字符或10个十六进制数字");
+                }else if($("select[name='wepKeyBit']").val()=='104-bit'){
+                    $(this).next().html("128位无线网络密钥需输入13个ASCII字符或26个十六进制数");
+                }    
+            })
+            $("select[name='wep_encrypt']").change(function(){
+                $(".wep_len").show();
+                $("#wep_settings").show();
+                $("#password").show();
+            })
+            $.fn.append.apply(
+                $("select[name='ssidx']"),
+                $.map(wlan_config,function(conn,idx){
+                    return $("<option/>").val(idx).html("SSID"+idx);
+                })
+            )
+            .change(function(){
+                var wlan_conn=wlan_config[this.value];
+                with(wlan_conn){
+                    var g_ssid_enable=0;
+                    if(Status=="Up"){
+                        g_ssid_enable=1;
+                    }
+                    $(":input[name='ssid_enable']").prop("checked",Boolean(g_ssid_enable)).triggerHandler("click");
+                    $(":input[name='ssid']").val(SSID);
+                    if( ! 0 ){
+                        var mr= eval("/("+Prefix+")?(.*)/");
+                        var mo=mr.exec(SSID);
+                        $("#wl_ssid_prfx").html(mo[1]);
+                        $("input[name='ssid']").val(mo[2]); 
+                    }                    
+                    $("select[name='wl_beaconType']").unbind('change').change(function(){
+                        switch(this.value){
+                            case "None":
+                                $("#wep_settings").hide();
+                                $("#wpa_settings").hide();
+                                $("#password").hide();
+                                break;
+                            case "Basic":
+                                $("#wep_settings").show();
+                                $("#wpa_settings").hide();
+                                $("#password").show();
+                                $("select[name='wep_encrypt']").change();
+                                $("input[name='wpa_psk']").val(base64decode(wepKeys[1]));
+                                break;
+                            case "WPA":
+                                $("#wep_settings").hide();
+                                $("#wpa_settings").show();
+                                $("select[name='wpa_encrypt_mode']").empty();
+                                for(var i=0;i<3;i++){
+                                    $("select[name=wpa_encrypt_mode]").append("<option value='"+wpa_encrypt_val[i]+"'>"+wpa_encrypt_html[i]+"</option>");
+                                }
+                                $("#password").show();
+                                $("input[name='wpa_psk']").val(base64decode(psks[1].PreSharedKey));
+                                break;
+                            case "WPA2":
+                            case "WPA/WPA2":
+                                $("#wep_settings").hide();
+                                $("#wpa_settings").show();
+                                $("select[name='wpa_encrypt_mode']").empty();
+                                for(var i=0;i<3;i++){
+                                    $("select[name=wpa_encrypt_mode]").append("<option value='"+wpa_encrypt_val[i]+"'>"+wpa_encrypt_html[i]+"</option>");
+                                }
+                                $("#password").show();
+                                $("input[name='wpa_psk']").val(base64decode(psks[1].PreSharedKey));
+                                break;
+                        }
+                    }).val(BeaconType).change();
+                    if(BeaconType=='Basic'){
+                        $("select[name='wep_encrypt']").val(BasicAuthenticationMode).triggerHandler("change");
+                    }
+                    $("select[name='wepKeyBit']").val(WEPEncryptionLevel).triggerHandler("change");
+                    $("select[name='wpa_encrypt_mode']").val(WPAEncryptionModes);
+                    
+                    $("input[name='wl_hide']").prop("checked",Boolean(X_CT_COM_SSIDHide));
+                    var wlchannel=$("select[name='wl_channel']").empty();
+                    var channeList=get_channel_list(X_CT_COM_ChannelWidth);
+                    for(var i=0;i<channeList.length;i++){
+                        var txt=channeList[i]=="0"?"Auto":channeList[i];
+                        wlchannel.append($("<option value='"+channeList[i]+"'>"+txt+"</option>"));
+                    }
+                    wlchannel.val(Channel);
+                    $("select[name='wl_mode']").unbind('change').change(function() {
+                        var bandwidth = $("select[name='wl_NChannelwidth']");
+                        var wl_stardard=$("select[name='wl_mode']").val();
+                        bandwidth.empty();
+
+                        if (wl_stardard == "b" || wl_stardard == "g" || wl_stardard == "b,g") {
+                            bandwidth.append($("<option value='0'>20MHz</option>"));
+                        }else{
+                            bandwidth.append($("<option value='0'>20MHz</option>"))
+                            .append($("<option value='1'>40MHz</option>"))
+                            .append($("<option value='2'> 20/40MHz </option>"));
+                        }
+                    }).val(Standard).change();
+                    $("select[name='wl_N_GuardInterval']").val(X_CT_COM_GuardInterval);
+                    var wl_power=$("select[name='wl_power']").empty();
+                    for(var i=5;i>0;i--){
+                        wl_power.append($("<option value='"+((6-i)*20)+"'>"+((6-i)*20)+"%</option>"))
+                    }
+                    wl_power.val(TransmitPower);
+                    $("select[name='wl_NChannelwidth']").unbind('change').change(function(){
+                        var ary;
+                        if(this.value==0){
+                            ary=wl_20M_MaxBitRates;
+                        }else if(this.value>0){
+                            ary=wl_40M_MaxBitRates;
+                        }
+                        var wlch = $("select[name='wl_channel']").empty();
+                        var channeList=get_channel_list(this.value);
+                        for(var i=0;i<channeList.length;i++){
+                            var txt=channeList[i]=="0"?"Auto":channeList[i];
+                            wlch.append($("<option value='"+channeList[i]+"'>"+txt+"</option>"));
+                        }
+                        wlch.val(Channel);
+                    }).val(X_CT_COM_ChannelWidth).change()
+                }
+                $("#togglePassword").change();
+            }).val(urlParams['ssid']);
+            $("form").submit(function(){
+                var ssid_enable=document.getElementById("WlanEnable_checkbox").checked;
+                if(!ssid_enable){
+                    return true;
+                }
+                var ssid_name=$("input[name='ssid']").val();
+                if(ssid_name.length>27){
+                    alert("SSID允许最大长度是:27");
+                    return false; 
+                }else{
+                    if(! /^[0-9a-zA-Z_-]{1,27}$/.test(ssid_name) ){
+                        alert("请输入正确的SSID,只允许包含英文字母,数字,'_'以及'-'");
+                        $("input[name='ssid']").focus();
+                        return false;
+                    }
+                    if( /[0oOB8Il1]/g.test(ssid_name) ){
+                        if(!confirm("输入的ssid含有易混淆的字符(0/o/O,B/8,I/l/1),确定吗?")){
+                            return false;
+                        }
+                    }
+                }
+                
+                mode=$("select[name='wl_beaconType']").val();
+                var wl_mode = $("select[name='wl_mode']").val();
+                if(mode=="Basic"){
+                    var keyBit=$("select[name='wepKeyBit']")
+                    var keyFmt=$.trim(getToggledPasswordValue($("input[name='wpa_psk']")));
+                    var pass=0
+                    var test1=keyBit.val();
+                    if(wl_mode =="n"){
+                        alert("WEP加密不支持n模式");
+                        return false;
+                    }
+                    if(keyBit.val()=="40-bit"){
+                        if((keyFmt.length!=10) && (keyFmt.length!=5)){
+                            alert("无线网络密钥应该是5个ASCII字符或者是10个十六进制数");
+                            return false;
+                        }
+                        if(keyFmt.length==5){
+                            if(!keyFmt.match(/[\x00-\xff]{5}$/)){
+                                alert("无线网络密钥不是有效的ASCII格式，请使用英文符号");
+                                return false;
+                            }
+                        }
+                        if(keyFmt.length==10){
+                            if(!keyFmt.match(/^[0-9a-fA-F]{10}$/)){
+                                alert("无线网络密钥不是有效的十六进制格式");
+                                return false;
+                            }
+                        }
+                    } else if(keyBit.val()=="104-bit"){
+                        if((keyFmt.length!=26) && (keyFmt.length!=13)){
+                            alert("无线网络密钥应该是13个ASCII字符或26个十六进制数");
+                            return false;
+                        }
+                        if(keyFmt.length==13){
+                            if(!keyFmt.match(/[\x00-\xff]{13}$/)){
+                                alert("无线网络密钥不是有效的ASCII格式，请使用英文符号");
+                                return false;
+                            }
+                        }
+                        if(keyFmt.length==26){
+                            if(!keyFmt.match(/^[0-9a-fA-F]{26}$/)){
+                                alert("无线网络密钥不是有效的十六进制格式");
+                                return false;
+                            }
+                        }
+                    }
+                    pass++;
+                    $("input[id='Save_button']").prop("disabled",true);
+                    return true;
+                } else if(mode=="WPA" || mode=="WPA2" || mode=="11i"|| mode=="WPA/WPA2" || mode=="WPAand11i"){
+                    var psk = $.trim(getToggledPasswordValue($("input[name='wpa_psk']")));
+                    var wpa_mode = $("select[name='wpa_encrypt_mode']").val();
+                    if(wpa_mode=="TKIPEncryption" && wl_mode=="n" ){
+                        alert("WPA/TKIP加密不支持n模式");
+                        return false;
+                    }
+                    if(psk.length<8 || psk.length>63){
+                        alert("密码长度应该是8-63位");
+                        return false;
+                    }
+                    if(!psk.match(/[\x00-\xff]{8,63}$/)){
+                        alert("无线网络密钥不是有效的ASCII格式，请使用英文符号");
+                        return false;
+                    }
+                    $("input[id='Save_button']").prop("disabled",true);
+                }
+            })
+        })
+    </script>
+  
+    <body>
+        <form action="?do_config_all" method="post">
+            <b>无线基本配置</b>
+            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td width="30%">
+                        <b>启用无线:</b>
+                    </td>
+                    <td>
+                        <input name="ap_enable" type="checkbox"/> 
+                    </td>
+                </tr>
+            </table>
+            <div class="apsetup" style="display:none;width:100%">
+                <table width='100%' border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td width='30%'>
+                            选择SSID:
+                        </td>
+                        <td>
+                            <select name='ssidx' style="width:100px"></select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width='30%'>                
+                            启用SSID:
+                        </td>
+                        <td >
+                            <input type='checkbox'  id="WlanEnable_checkbox" name='ssid_enable'/>
+                        </td>
+                    </tr>
+                </table>
+                <table class="wlconfig" width='100%' border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td width='30%'> SSID :</td>
+                        <td>
+                            
+                            <span id="wl_ssid_prfx"></span>
+                            <input name='ssid' id="WlanSsid_text" style="width:120px" type="text"/>
+                            
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>认证模式:</td>
+                        <td>
+                            <select name='wl_beaconType' id="WlanAuthMode_select" size="1">
+                                <option value="None">NONE</option>
+                                <option value="Basic">WEP</option>
+                                <option value="WPA">WPA-PSK</option>
+                                <option value="WPA2">WPA2-PSK</option>
+                                <option value="WPA/WPA2">WPA-PSK/WPA2-PSK</option>
+                            </select>
+                            <lable>推荐使用WPA-PSK/WPA2-PSK认证模式</lable>
+                        </td>
+                    </tr>
+                </table>
+                <table class="wlconfig" width='100%' id="wep_settings" border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td width='30%'>WEP 加密:</td>
+                        <td>
+                            <select name="wep_encrypt" id="WlanWepPwd_select">
+                                <option value="Both">OPEN+SHARE</option>
+                                <option value="OpenSystem">OPEN</option>
+                                <option value="SharedKey">SHARE</option>
+                            </select>
+                            <label>推荐使用OPEN+SHARE加密</label>
+                        </td>
+                    </tr>
+                    <tbody class=wep_len>    
+                        <tr>
+                            <td>加密长度:</td>
+                            <td name='wepBit'>
+                                <select name='wepKeyBit' id="WlanKeyBit_select" size='1'>
+                                    <option value="40-bit">64Bit</option>
+                                    <option value="104-bit">128Bit</option>
+                                </select>
+                                <label id="wepkey_bit"></label>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="wlconfig" width='100%' id="wpa_settings" border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td width='30%'>WPA 加密:</td>
+                        <td>
+                            <select name="wpa_encrypt_mode">
+                                <option value="TKIPEncryption">TKIP</option>
+                                <option value="TKIPandAESEncryption">TKIP+AES</option-->
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+                <table class="wlconfig" width='100%' id="password" border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                    <td width='30%'>无线网络密钥<td>                                       
+                    <td><input type='password' id="wepkey_hidden" name="wpa_psk" size='20' maxlength='63' /> </td>
+                    <td><input type='text' id="wepkey_show" name="wpa_psk" size='20' maxlength='63' style="display: none;" /> </td>
+                    <td><input type='checkbox' id="togglePassword" type_target="#wepkey_show" password_target="#wepkey_hidden" /> </td>
+                    <td><label for="togglePassword">
+                        点击此处查看
+                    </label>
+                    </td>
+                    </tr>
+                </table>
+                <tr><td colSpan=4><hr></td></tr>
+                <b>无线高级设置</b>
+                <table class="wlconfig" width='100%' id="password" border="0" cellpadding="0" cellspacing="0">
+                    
+                    <tr>
+                        <td width="30%" >发送功率:</td>
+                        <td>
+                            <select name="wl_power"  id="WlanTransmit_select"   style="width:200px"   size="1"> </select>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <br/>
+            <br/>
+            <center>
+                <input class="buttonX" type='submit' id="Save_button" value='保存/应用'/>
+            </center>
+        </form>
+    </body>
+</html>
