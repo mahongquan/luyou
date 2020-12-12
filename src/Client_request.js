@@ -1,16 +1,14 @@
 import myglobal from './myglobal';
-const sjcl = require('./sjcl.js');
-const jsencr = require('jsencrypt');
-if(window.require){
-  var runServer=require('./requestServer').runServer
-}
+// if(window.require){
+//   var runServer=require('./requestServer').runServer
+// }
 var queryString=require('querystring');
 const request1 = require('request');
 var request = request1.defaults({jar: true})
 let cookies={};
 let host = '';
 let response_html="";
-host = 'http://192.168.1.1';
+host = 'http://127.0.0.1:8000';
 function myFetch(method, url, body, cb, headers2, err_callback) {
   let data;
   let headers;
@@ -56,16 +54,18 @@ function my_checkStatus(response,cb,err_callback) {
       cb(json);
     } 
     catch (error) {
-      if(window.require){
-        response.url=response.req.path;
-        runServer(response);
-        myglobal.app.show_webview("http://127.0.0.1:8001"+response.url)
-      }
+      console.log(error)
+      // if(window.require){
+      //   response.url=response.req.path;
+      //   // runServer(response);
+      //   // myglobal.app.show_webview("http://127.0.0.1:8001"+response.url)
+      // }
     }
   }else{
     response.url=response.req.path;
-    runServer(response);
-    myglobal.app.show_webview("http://127.0.0.1:8001"+response.url)
+    console.log(response)
+    // runServer(response);
+    // myglobal.app.show_webview("http://127.0.0.1:8001"+response.url)
   }
 }
 
@@ -110,6 +110,39 @@ function postForm(url, data, cb,err_callback) {
     }
   )
   return;
+  // var formData = {
+  //   // Pass a simple key-value pair
+  //   my_field: 'my_value',
+  //   // Pass data via Buffers
+  //   my_buffer: Buffer.from([1, 2, 3]),
+  //   // Pass data via Streams
+  //   my_file: fs.createReadStream(__dirname + '/unicycle.jpg'),
+  //   // Pass multiple values /w an Array
+  //   attachments: [
+  //     fs.createReadStream(__dirname + '/attachment1.jpg'),
+  //     fs.createReadStream(__dirname + '/attachment2.jpg')
+  //   ],
+  //   // Pass optional meta-data with an 'options' object with style: {value: DATA, options: OPTIONS}
+  //   // Use case: for some types of streams, you'll need to provide "file"-related information manually.
+  //   // See the `form-data` README for more information about options: https://github.com/form-data/form-data
+  //   custom_file: {
+  //     value:  fs.createReadStream('/dev/urandom'),
+  //     options: {
+  //       filename: 'topsecret.jpg',
+  //       contentType: 'image/jpeg'
+  //     }
+  //   }
+  // };
+  // request.post({url:host+url, formData: data}, 
+  //   function optionalCallback(error, response, body) {
+  //   if(error){
+  //       if(err_callback){err_callback(error)}
+  //       else{ console.log(error)}
+  //     }
+  //     else{
+  //       my_checkStatus(response,cb,err_callback);
+  //     }
+  // });
 }
 function contacts(data, cb, err_callback) {
   return get('/rest/Contact/', data, cb, err_callback);
@@ -138,183 +171,22 @@ function logout(cb) {
   return get('/rest/logout', undefined, cb);
 }
 
-// function login(username, password, cb) {
-//   //post form
-//   var payload = {
-//     username: username,
-//     password: password,
-//   };
-//   return postForm('/rest/login',payload,cb,undefined)
-// }
-(
-  (sjcl.beware &&
-    sjcl.beware[
-      "CBC mode is dangerous because it doesn't protect message integrity."
-    ]) ||
-  function () {}
-)();
-var crypto_page = (function () {
-  var base64url_escape = function (b64) {
-    var out = '';
-    for (var i = 0; i < b64.length; i++) {
-      var c = b64.charAt(i);
-      if (c == '+') {
-        out += '-';
-      } else if (c == '/') {
-        out += '_';
-      } else if (c == '=') {
-        out += '.';
-      } else {
-        out += c;
-      }
-    }
-    return out;
+function login(username, password, cb) {
+  //post form
+  var payload = {
+    username: username,
+    password: password,
   };
-
-  var encrypt = function (pubkey, plaintext) {
-    var aeskey = sjcl.random.randomWords(4, 0);
-    var iv = sjcl.random.randomWords(4, 0);
-    var pt = sjcl.codec.utf8String.toBits(plaintext);
-    var aes = new sjcl.cipher.aes(aeskey);
-    var ct = sjcl.mode.cbc.encrypt(aes, pt, iv);
-    var rsa = new jsencr.JSEncrypt();
-    if (rsa.setPublicKey(pubkey) == false) return fasle;
-
-    var base64url = sjcl.codec.base64url;
-    var base64 = sjcl.codec.base64;
-    var aesinfo = base64.fromBits(aeskey) + ' ' + base64.fromBits(iv);
-    var ck = rsa.encrypt(aesinfo);
-    if (ck == false) return false;
-
-    return {
-      ct: base64url.fromBits(ct),
-      ck: base64url_escape(ck),
-    };
-  };
-
-  var encrypt_post_data = function (pubkey, plaintext) {
-    /*only encodeUrl password, for & is special charactor in web url*/
-    var p = encrypt(pubkey, plaintext);
-    return 'encrypted=1&ct=' + p.ct + '&ck=' + p.ck;
-  };
-
-  return {
-    encrypt: encrypt,
-    encrypt_post_data: encrypt_post_data,
-    base64url_escape: base64url_escape,
-  };
-})();
-var hexVals = new Array(
-  '0',
-  '1',
-  '2',
-  '3',
-  '4',
-  '5',
-  '6',
-  '7',
-  '8',
-  '9',
-  'A',
-  'B',
-  'C',
-  'D',
-  'E',
-  'F'
-);
-var unsafeString = '"<>%\\^[]`+$,\'#&';
-
-function isUnsafe(compareChar) {
-  if (
-    unsafeString.indexOf(compareChar) == -1 &&
-    compareChar.charCodeAt(0) > 32 &&
-    compareChar.charCodeAt(0) < 123
-  )
-    return false;
-  // found no unsafe chars, return false
-  else return true;
-}
-
-function decToHex(num, radix) {
-  var hexString = '';
-  while (num >= radix) {
-    temp = num % radix;
-    num = Math.floor(num / radix);
-    hexString += hexVals[temp];
-  }
-  hexString += hexVals[num];
-  return reversal(hexString);
-}
-
-function reversal(s) {
-  var len = s.length;
-  var trans = '';
-  for (i = 0; i < len; i++) trans = trans + s.substring(len - i - 1, len - i);
-  s = trans;
-  return s;
-}
-
-function convert(val) {
-  return '%' + decToHex(val.charCodeAt(0), 16);
-}
-function encodeUrl(val) {
-  var len = val.length;
-  var i = 0;
-  var newStr = '';
-  var original = val;
-
-  for (i = 0; i < len; i++) {
-    if (val.substring(i, i + 1).charCodeAt(0) < 255) {
-      // hack to eliminate the rest of unicode from this
-      if (isUnsafe(val.substring(i, i + 1)) == false)
-        newStr = newStr + val.substring(i, i + 1);
-      else newStr = newStr + convert(val.substring(i, i + 1));
-    } else {
-      alert(
-        'Found a non-ISO-8859-1 character at position: ' +
-          (i + 1) +
-          ',\nPlease eliminate before continuing.'
-      );
-      newStr = original;
-      i = len;
-    }
-  }
-  return newStr;
-}
-
-function login(cb) {
-  var username = 'user';
-  var password = 'dww3f';
-  var postdata0 =
-    'newMethodLogin=1&name=' + username + '&pswd=' + encodeUrl(password);
-  var isEncode = true;
-  console.log('login');
-  console.log(postdata0);
-  var pubkey =
-    '-----BEGIN PUBLIC KEY-----\
-MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDi7yx8g8nHmX0AWSbld7wpcVeN\
-x+oHR02qs57JODN41k+WCgT252m/kRVJueJkDSdf0xLNVmNRFq+cPPLTkTRWMYIl\
-qFg80fKQFgwZF6BS4MK4t2otxqd2nmIe8B90Nm7icEDxcRzVpAchyT6RdYGFK5++\
-7izTsGqfusx1mnV+jwIDAQAB\
------END PUBLIC KEY-----\
-';
-  var info = {
-    url: 'login.cgi',
-
-    pubkey: pubkey,
-
-    data: postdata0,
-    isEncode: isEncode,
-  };
-  var postdata = null;
-  if (info.isEncode) {
-    postdata = crypto_page.encrypt_post_data(info.pubkey, info.data);
-  } else {
-    postdata = info.data;
-  }
-  console.log(postdata);
-  var url = 'http://192.168.1.1/login.cgi';
-  return post('/login.cgi',postdata,cb,undefined)
+  // var data1 = new FormData();
+  // for(var i in payload){
+  //  data1.append(i, payload[i]); 
+  // }
+  // var data2=queryString.stringify(data1);
+  // //method, url, body, cb, headers2, err_callback
+  // return myFetch('POST','/rest/login',data2,cb,{
+  //   'Content-Type': 'application/x-www-form-urlencoded',
+  // },undefined);
+  return postForm('/rest/login',payload,cb,undefined)
 }
 const Client = {
   sql,

@@ -1,34 +1,61 @@
 import React from 'react';
 import Client from './Client_request';
-import myglobal from './myglobal';
-import DlgWebview from './DlgWebview2';
-// const funcs = require('./funcs.js');
-
-
+const cheerio = require('cheerio');
 class A4Lian extends React.Component {
   constructor(props) {
     super(props);
-    this.state={showWebview:false,url:""};
-    myglobal.app=this;
+    this.state={url:"",content:""};
   }
-  show_webview=(url)=>{
-    this.setState({showWebview:true,url:url});
-  }  
   login=()=>{
-    Client.login( res => {
+   Client.login( "mahongquan","333333",(res)=> {
+      console.log("success==================")
       console.log(res);
-      // if (res.success) {
-      //   this.setState({
-      //     logined: true,
-      //   });
-      //   this.setState({
-      //     user: data.username,
-      //   });
-      //   this.handleUserChange(this.state.user);
-      // }
-    },(error)=>{
-      console.log(error);
-      myglobal.app.show_webview(error.response.url);
+      // let $ = cheerio.load(res.body,{
+      //  xmlMode: true,
+      //  lowerCaseTags: false
+      // });
+      // let div=$("body");
+      // this.setState({content:div.html()});
+    },(res)=>{
+      console.log("error===================")
+      console.log(res);
+      // let $ = cheerio.load(res.body,{
+      //  xmlMode: true,
+      //  lowerCaseTags: false
+      // });
+      // let div=$("body");
+      // this.setState({content:div.html()});
+    });
+  }
+  login_index=()=>{
+    Client.get("/admin", undefined,(res)=> {
+      console.log("success==================")
+      console.log(res);
+      let $ = cheerio.load(res.body,{
+       xmlMode: true,
+       lowerCaseTags: false
+      });
+      let div=$("body");
+      this.setState({content:div.html()});
+    },(res)=>{
+      console.log("error===================")
+      console.log(res);
+      let $ = cheerio.load(res.body,{
+       xmlMode: true,
+       lowerCaseTags: false
+      });
+      let div=$("body");
+      this.setState({content:div.html()});
+    });
+    //wlan_config.cgi
+  }
+  wlan_config=()=>{
+    Client.contacts(undefined,(res)=> {
+      console.log("success==================")
+      console.log(res);
+    },(res)=>{
+      console.log("error===================")
+      console.log(res);
     });
   }
   render() {
@@ -36,15 +63,12 @@ class A4Lian extends React.Component {
     return (
       <div >
         <div className="only_screen">hello</div>
+        <button onClick={this.login_index}>login_index</button>
         <button onClick={this.login}>login</button>
-        <button onClick={()=>{this.show_webview("http://127.0.0.1:8001")}}>webview</button>
-        <DlgWebview
-          open={this.state.showWebview}
-          url={this.state.url}
-          onClose={() => {
-            this.setState({ showWebview: false });
-          }}
-        />
+        <button onClick={this.wlan_config}>wlan_config</button>
+        <iframe name="preview" srcDoc={this.state.content} 
+        style={{width:"100%",height:"100%"}}>
+        </iframe>
       </div>
     );
   }
