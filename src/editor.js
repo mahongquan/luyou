@@ -1,5 +1,5 @@
 import React from 'react';
-import Client from './Client_request';
+import Client from './Client_fetch';
 const cheerio = require('cheerio');
 class A4Lian extends React.Component {
   constructor(props) {
@@ -28,24 +28,24 @@ class A4Lian extends React.Component {
     });
   }
   login_index=()=>{
-    Client.get("/admin", undefined,(res)=> {
+    Client.login_index((res)=> {
       console.log("success==================")
       console.log(res);
-      let $ = cheerio.load(res.body,{
-       xmlMode: true,
-       lowerCaseTags: false
-      });
-      let div=$("body");
-      this.setState({content:div.html()});
+      // let $ = cheerio.load(res.body,{
+      //  xmlMode: true,
+      //  lowerCaseTags: false
+      // });
+      // let div=$("body");
+      // this.setState({content:div.html()});
     },(res)=>{
       console.log("error===================")
       console.log(res);
-      let $ = cheerio.load(res.body,{
-       xmlMode: true,
-       lowerCaseTags: false
-      });
-      let div=$("body");
-      this.setState({content:div.html()});
+      // let $ = cheerio.load(res.body,{
+      //  xmlMode: true,
+      //  lowerCaseTags: false
+      // });
+      // let div=$("body");
+      // this.setState({content:div.html()});
     });
     //wlan_config.cgi
   }
