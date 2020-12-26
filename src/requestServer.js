@@ -2,7 +2,7 @@ const request1 = require('request');
 var request = request1.defaults({jar: true})
 const host = 'http://192.168.1.1';
 var root_response=null;
-export function runServer(response){
+function runServer(response){
   root_response=response;
 }
 function myrespond(req,res,body){
@@ -24,7 +24,7 @@ function myrespond(req,res,body){
     ,followRedirect:false
     }
   , function (error, response,body) {
-      console.log(response);
+      // console.log(response);
       if(error){
          res.writeHead(404);
          res.write(""+error);
@@ -40,7 +40,7 @@ function myrespond(req,res,body){
 }
 var server=require('http').createServer(function (req, res) {
     console.log("req:"+req.url);
-    console.log(req);
+    console.log(req.headers);
     let body="";
     req.setEncoding('utf8');
     req.on('data',function(chunk){

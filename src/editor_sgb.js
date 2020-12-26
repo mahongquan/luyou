@@ -1,5 +1,5 @@
 import React from 'react';
-import Client from './Client_fetch_luyou';
+import Client from './Client_fetch_sgb';
 const cheerio = require('cheerio');
 class A4Lian extends React.Component {
   constructor(props) {
@@ -57,6 +57,7 @@ class A4Lian extends React.Component {
   }
   wlan_config=()=>{
     Client.wlan((res)=> {
+      console.log(res);
       res.text().then((body)=>{
         let $ = cheerio.load(body,{
          xmlMode: true,

@@ -3,7 +3,7 @@ let csrftoken;
 const fetch = require('node-fetch');
 let host = '';
 if (window.require) {
-  host = 'http://127.0.0.1:8000';
+  host = 'http://192.168.1.1';
 }
 function myFetch(method, url, body, cb, headers2, err_callback) {
   let data;
@@ -144,20 +144,6 @@ function login(username, password, cb) {
   });
 }
 
-// function checkStatus(response) {
-//   if (response.status >= 200 && response.status < 300) {
-//     return response;
-//   }
-//   const error = new Error(`HTTP Error ${response.statusText}`);
-//   error.status = response.statusText;
-//   error.response = response;
-//   throw error;
-// }
-
-// function parseJSON(response) {
-//   var r = response.json();
-//   return r;
-// }
 function sql(cmd, callback) {
   get('/rest/sql', { cmd: cmd }, callback, null);
 }
